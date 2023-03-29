@@ -20,7 +20,8 @@
     "wonderwp/dependency-injection": "^1.0"
   },
   "require-dev": {
-    "johnpbloch/wordpress": "^6.0"
+    "johnpbloch/wordpress": "^6.0",
+    "phpunit/phpunit": "^9.6"
   },
   "autoload": {
     "psr-4": {"WonderWp\\Component\\Sanitizer\\": "src"},
@@ -28,5 +29,10 @@
       "/tests/"
     ]
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "dev",
+  "config": {
+    "allow-plugins": {
+      "johnpbloch/wordpress-core-installer": true
+    }
+  }
 }
