@@ -1,0 +1,38 @@
+{
+  "name": "wonderwp/sanitizer",
+  "description": "WonderWp Sanitizer Component",
+  "type": "library",
+  "keywords": ["sanitizer", "security", "WonderWp","WordPress"],
+  "homepage": "https://github.com/wonderwp/Sanitizer",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jeremy Desvaux",
+      "homepage": "https://jdmweb.com"
+    },
+    {
+      "name": "WonderWp Community",
+      "homepage": "http://wonderwp.net/Contribution/Contributors.html"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "wonderwp/dependency-injection": "^1.0"
+  },
+  "require-dev": {
+    "johnpbloch/wordpress": "^6.0",
+    "phpunit/phpunit": "^9.6"
+  },
+  "autoload": {
+    "psr-4": {"WonderWp\\Component\\Sanitizer\\": "src"},
+    "exclude-from-classmap": [
+      "/tests/"
+    ]
+  },
+  "minimum-stability": "dev",
+  "config": {
+    "allow-plugins": {
+      "johnpbloch/wordpress-core-installer": true
+    }
+  }
+}
