@@ -74,7 +74,7 @@ class Sanitizer implements SingletonInterface
 
     protected static function isUrl($url): bool|int
     {
-        return preg_match('/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/', $url);
+        return preg_match('/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.\-%]*)*\/?$/', $url);
     }
 
 }
