@@ -54,7 +54,12 @@ class Sanitizer implements SingletonInterface
             }
             return $data;
         } elseif (is_numeric($data)) {
-            return is_float($data) ? self::sanitizeFloat($data) : self::sanitizeInteger($data);
+            // Fix: Check if numeric string contains decimal point to detect floats
+            // is_float() only returns true for PHP float types, not numeric strings
+            // Use regex to ensure we only match numeric strings with decimal points (not any string with a period)
+            // Pattern matches: "123.45", "-123.45", ".5", "5.", "123.45e10" etc.
+            $shouldTreatAsFloat = is_float($data) || (is_string($data) && preg_match('/^-?(\d+\.\d*|\.\d+)/', $data));
+            return $shouldTreatAsFloat ? self::sanitizeFloat($data) : self::sanitizeInteger($data);
         } elseif (is_email($data)) {
             return self::sanitizeEmail($data);
         } elseif (self::isUrl($data)) {
