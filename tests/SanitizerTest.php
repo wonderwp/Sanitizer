@@ -51,6 +51,8 @@ class SanitizerTest extends TestCase
             'url'        => 'https://example.com/',
             'age'        => 30,
             'salary'     => 10000.50,
+            'lat'        => '48.8566',
+            'lng'        => '2.3522',
             'address'    => [
                 'street' => '<script>alert("XSS attack")</script>',
                 'city'   => '<b>New York</b>',
@@ -74,10 +76,48 @@ class SanitizerTest extends TestCase
         $this->assertEquals('NY', $sanitizedData['address']['state']);
         $this->assertEquals('10001', $sanitizedData['address']['zip']);
 
+        $this->assertEquals(48.8566, $sanitizedData['lat']);
+        $this->assertEquals(2.3522, $sanitizedData['lng']);
+
         // test XSS attacks
         $this->assertEquals('', $sanitizedData['name']);
         $this->assertEquals('', $sanitizedData['address']['street']);
         $this->assertEquals('o\&quot; onmouseover=\&quot;alert(1)', $sanitizedData['malicious1']);
         $this->assertEquals('o&quot;+onmouseover&quot;alert1', $sanitizedData['malicious2']);
+    }
+
+    public function testSanitizeDataWithActionEditpost()
+    {
+        $data = [
+            '_wpnonce' => '63d16f5e1e',
+            '_wp_http_referer' => '/wp/wp-admin/post.php?post=1&action=edit',
+            'user_ID' => 1,
+            'action' => 'editpost',
+            'originalaction' => 'editpost',
+            'post_type' => 'post',
+            'original_post_status' => 'publish',
+            'post_ID' => 9217,
+            'meta-box-order-nonce' => '0977cc44da',
+            'closedpostboxesnonce' => 'e35d35dced',
+            'samplepermalinknonce' => '02c7d2b556',
+            'seopanel' => [
+                'title' => '',
+                'desc'  => '',
+                'classes' => '',
+                'jsclass' => '',
+            ],
+            'test_lat' => '43.464276',
+            'test_lng' => '3.46911',
+            'test_popin_offset' => '50,35',
+            'post_mime_type' => '',
+            'ID' => 1,
+            'post_author' => 1,
+            'post_status' => 'publish',
+            'comment_status' => 'closed',
+            'ping_status' => 'closed',
+        ];
+        $sanitizedData = Sanitizer::sanitizeData($data);
+        $this->assertEquals('43.464276', $sanitizedData['test_lat']);
+        $this->assertEquals('3.46911', $sanitizedData['test_lng']);
     }
 }
