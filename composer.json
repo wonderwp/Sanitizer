@@ -20,7 +20,6 @@
     "wonderwp/dependency-injection": "dev-feature/php_8"
   },
   "require-dev": {
-    "johnpbloch/wordpress": "^7.0",
     "phpunit/phpunit": "^12.0"
   },
   "autoload": {
@@ -29,10 +28,13 @@
       "/tests/"
     ]
   },
-  "minimum-stability": "dev",
-  "config": {
-    "allow-plugins": {
-      "johnpbloch/wordpress-core-installer": true
+  "autoload-dev": {
+    "psr-4": {
+      "WonderWp\\Component\\Sanitizer\\Tests\\": "tests/"
     }
-  }
+  },
+  "scripts": {
+    "test": "phpunit --configuration phpunit.xml.dist"
+  },
+  "minimum-stability": "dev"
 }

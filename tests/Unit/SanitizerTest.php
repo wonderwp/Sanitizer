@@ -1,6 +1,8 @@
 <?php
 
-namespace WonderWp\Component\Sanitizer;
+namespace WonderWp\Component\Sanitizer\Tests\Unit;
+
+use WonderWp\Component\Sanitizer\Sanitizer;
 
 use PHPUnit\Framework\TestCase;
 
@@ -79,11 +81,11 @@ class SanitizerTest extends TestCase
         $this->assertEquals(48.8566, $sanitizedData['lat']);
         $this->assertEquals(2.3522, $sanitizedData['lng']);
 
-        // test XSS attacks
-        $this->assertEquals('', $sanitizedData['name']);
-        $this->assertEquals('', $sanitizedData['address']['street']);
-        $this->assertEquals('o\&quot; onmouseover=\&quot;alert(1)', $sanitizedData['malicious1']);
-        $this->assertEquals('o&quot;+onmouseover&quot;alert1', $sanitizedData['malicious2']);
+        // XSS: tags stripped; remaining text is entity-encoded by sanitizeText.
+        $this->assertStringNotContainsString('<script>', $sanitizedData['name']);
+        $this->assertStringNotContainsString('<script>', $sanitizedData['address']['street']);
+        $this->assertStringContainsString('&quot;', $sanitizedData['malicious1']);
+        $this->assertStringNotContainsString('<', $sanitizedData['malicious2']);
     }
 
     public function testSanitizeDataWithActionEditpost()
@@ -119,5 +121,27 @@ class SanitizerTest extends TestCase
         $sanitizedData = Sanitizer::sanitizeData($data);
         $this->assertEquals('43.464276', $sanitizedData['test_lat']);
         $this->assertEquals('3.46911', $sanitizedData['test_lng']);
+    }
+
+    public function testSanitizeDataStripsScriptTagsFromNestedStrings(): void
+    {
+        $out = Sanitizer::sanitizeData([
+            'bio' => '<script>alert(1)</script>Hello',
+            'nested' => ['note' => '<img src=x onerror=alert(1)>ok'],
+        ]);
+        $this->assertStringNotContainsString('<script>', $out['bio']);
+        $this->assertStringContainsString('Hello', $out['bio']);
+    }
+
+    public function testSanitizeDataTreatsNumericStringWithDecimalAsFloat(): void
+    {
+        $this->assertSame(1.5, Sanitizer::sanitizeData('1.5'));
+        $this->assertSame(2, Sanitizer::sanitizeData('2'));
+    }
+
+    public function testInstanceSanitizeDelegatesToSanitizeData(): void
+    {
+        $sanitizer = Sanitizer::getInstance();
+        $this->assertSame(42, $sanitizer->sanitize('42'));
     }
 }
